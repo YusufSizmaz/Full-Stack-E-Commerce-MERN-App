@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+dotenv.config();
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
 import connectDB from "./config/connectDB.js";
+import userRouter from "./route/user.route.js";
 
 const app = express();
-dotenv.config();
 
 app.use(
   cors({
@@ -24,6 +25,8 @@ app.use(
   })
 );
 
+const PORT = 8080 || process.env.PORT;
+
 app.get("/", (request, response) => {
   /// Server to client
   response.json({
@@ -31,7 +34,7 @@ app.get("/", (request, response) => {
   });
 });
 
-const PORT = 8080 || process.env.PORT;
+app.use("/api/user", userRouter);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
