@@ -132,7 +132,7 @@ export async function loginController(request, response) {
     const checkPassword = await bcryptjs.compare(password, user.password);
     if (!checkPassword) {
       return response.status(400).json({
-        message: "Check yout password",
+        message: "Check your password",
         error: true,
         succes: false,
       });
