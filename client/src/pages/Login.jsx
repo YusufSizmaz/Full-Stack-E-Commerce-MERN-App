@@ -8,7 +8,7 @@ import AxiosToastError from "./../utils/AxiosToastError";
 
 const Login = () => {
   const [data, setData] = useState({
-    email: "",
+    emailOrUsername: "",
     password: "",
   });
 
@@ -35,7 +35,10 @@ const Login = () => {
     try {
       const response = await Axios({
         ...SummaryApi.login,
-        data: data,
+        data: {
+          emailOrUsername: data.emailOrUsername,
+          password: data.password,
+        },
       });
 
       if (response.data.error) {
@@ -44,7 +47,7 @@ const Login = () => {
       if (response.data.success) {
         toast.success(response.data.message);
         setData({
-          email: "",
+          emailOrUsername: "",
           password: "",
         });
 
@@ -62,15 +65,15 @@ const Login = () => {
 
         <form className="grid gap-4 mt-6" onSubmit={handleSubmit}>
           <div className="grid gap-1">
-            <label htmlFor="email">Email :</label>
+            <label htmlFor="emailOrUsername">Email veya Username :</label>
             <input
-              type="email"
-              id="email"
+              type="text"
+              id="emailOrUsername"
               className="bg-blue-50 p-2 border rounded outline-none border-gray-300 focus-within:border-amber-300"
-              name="email"
-              value={data.email}
+              name="emailOrUsername"
+              value={data.emailOrUsername}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Email veya Username girin"
             />
           </div>
 

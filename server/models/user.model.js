@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Provide password"],
     },
+
     avatar: {
       type: String,
       default: "",
@@ -70,6 +71,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["ADMIN", "USER"],
       default: "USER",
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
     },
   },
   {

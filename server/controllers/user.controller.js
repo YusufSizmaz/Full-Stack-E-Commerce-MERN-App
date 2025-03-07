@@ -14,56 +14,59 @@ dotenv.config();
 
 export async function registerUserController(request, response) {
   try {
-    const { name, email, password } = request.body;
+    const { name, email, password, username } = request.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !username) {
       return response.status(400).json({
-        message: "provide email, name, password",
+        message: "Provide name, email, password, and username",
         error: true,
-        sucess: false,
+        success: false,
       });
     }
 
-    const user = await UserModel.findOne({ email });
-
-    if (user) {
-      return response.json({
-        message: "Already register email",
-        error: true,
-        sucess: false,
-      });
+    const existingUser = await UserModel.findOne({
+      $or: [{ email }, { username }],
+    });
+    if (existingUser) {
+      const message =
+        existingUser.email === email
+          ? "Already registered email"
+          : "Username already taken";
+      return response.json({ message, error: true, success: false });
     }
-    const salt = await bcryptjs.genSalt(10);
-    const hashPassword = await bcryptjs.hash(password, salt);
 
-    const payload = {
+    const hashPassword = await bcryptjs.hash(
+      password,
+      await bcryptjs.genSalt(10)
+    );
+
+    const newUser = new UserModel({
       name,
       email,
       password: hashPassword,
-    };
+      username,
+    });
+    const savedUser = await newUser.save();
 
-    const newUser = new UserModel(payload);
-    const save = await newUser.save();
+    const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${savedUser._id}`;
 
-    const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`;
-
-    const verifyEmail = await sendEmail({
+    await sendEmail({
       sendTo: email,
       subject: "Verify email from binkeyit",
-      html: verifyEmailTemplate(name, VerifyEmailUrl), // Doğru Kullanım
+      html: verifyEmailTemplate(name, verifyEmailUrl),
     });
 
     return response.json({
-      message: "User register successfully",
+      message: "User registered successfully",
       error: false,
-      succeess: true,
-      data: save,
+      success: true,
+      data: savedUser,
     });
   } catch (error) {
     return response.status(500).json({
-      message: error.message || error,
+      message: error.message || "Internal server error",
       error: true,
-      sucess: false,
+      success: false,
     });
   }
 }
@@ -71,7 +74,7 @@ export async function registerUserController(request, response) {
 export async function verifyEmailController(request, response) {
   try {
     const { code } = request.body;
-    const user = await UserModel.findOne({ _id: code });
+    const user = await UserModel.findById(code);
 
     if (!user) {
       return response
@@ -79,22 +82,19 @@ export async function verifyEmailController(request, response) {
         .json({ message: "Invalid code", error: true, success: false });
     }
 
-    const updateUser = await UserModel.UpdateOne(
-      { _id: code },
-      {
-        verify_email: true,
-      }
-    );
+    user.verify_email = true;
+    await user.save();
+
     return response.json({
-      message: "Verify email done",
+      message: "Email verified successfully",
       success: true,
       error: false,
     });
   } catch (error) {
     return response.status(500).json({
-      message: error.message || error,
+      message: error.message || "Internal server error",
       error: true,
-      success: true,
+      success: false,
     });
   }
 }
@@ -102,9 +102,9 @@ export async function verifyEmailController(request, response) {
 //Login Controller
 export async function loginController(request, response) {
   try {
-    const { email, password } = request.body;
+    const { emailOrUsername, password } = request.body;
 
-    if (!email || !password) {
+    if (!emailOrUsername || !password) {
       return response.status(400).json({
         message: "proivde email, password",
         error: true,
@@ -112,7 +112,9 @@ export async function loginController(request, response) {
       });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    });
 
     if (!user) {
       return response.status(400).json({

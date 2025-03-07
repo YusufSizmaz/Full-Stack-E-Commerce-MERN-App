@@ -14,6 +14,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    username: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -57,6 +58,12 @@ const Register = () => {
       return;
     }
 
+    // Kullanıcı adı boşsa
+    if (!data.username) {
+      toast.error("Kullanıcı adı zorunludur.");
+      return;
+    }
+
     try {
       const response = await Axios({
         ...SummaryApi.register,
@@ -73,6 +80,7 @@ const Register = () => {
           email: "",
           password: "",
           confirmPassword: "",
+          username: "",
         });
 
         setTimeout(() => {
@@ -103,6 +111,21 @@ const Register = () => {
               value={data.name}
               onChange={handleChange}
               placeholder="Enter your name"
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="grid gap-1">
+            <label htmlFor="username">User Name :</label>
+            <input
+              type="text"
+              id="username"
+              autoFocus
+              className="bg-blue-50 p-2 rounded border outline-none border-gray-300 focus-within:border-amber-300"
+              name="username"
+              value={data.username}
+              onChange={handleChange}
+              placeholder="Enter your user name"
               autoComplete="off"
             />
           </div>
