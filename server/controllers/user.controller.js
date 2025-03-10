@@ -106,9 +106,9 @@ export async function loginController(request, response) {
 
     if (!emailOrUsername || !password) {
       return response.status(400).json({
-        message: "proivde email, password",
+        message: "Provide email or username and password",
         error: true,
-        succeess: false,
+        success: false,
       });
     }
 
@@ -268,28 +268,30 @@ export async function updateUserDetails(request, response) {
 // Forgot password
 export async function forgotPasswordController(request, response) {
   try {
-    const { email } = request.body;
+    const { emailOrUsername } = request.body;
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    });
 
     if (!user) {
       return response.status(400).json({
-        message: "Email not available",
+        message: "Email or username not available",
         error: true,
         success: false,
       });
     }
 
     const otp = generetedOtp();
-    const expireTime = new Date() + 60 * 60 * 1000; // 1hr
+    const expireTime = new Date(Date.now() + 60 * 60 * 1000);
 
-    const update = await UserModel.findByIdAndUpdate(user._id, {
+    await UserModel.findByIdAndUpdate(user._id, {
       forgot_password_otp: otp,
-      forgot_password_expiry: new Date().toISOString(),
+      forgot_password_expiry: expireTime.toISOString(),
     });
 
     await sendEmail({
-      sendTo: email,
+      sendTo: user.email,
       subject: "Forgot Password From Binkeyit",
       html: forgotPasswordTemplate({
         name: user.name,
@@ -298,13 +300,13 @@ export async function forgotPasswordController(request, response) {
     });
 
     return response.json({
-      messgae: "check your email.",
+      message: "Check your email.",
       error: false,
       success: true,
     });
   } catch (error) {
     return response.status(500).json({
-      message: error.data || error,
+      message: error.message || "Internal server error",
       error: true,
       success: false,
     });
@@ -315,9 +317,9 @@ export async function verifyForgotPasswordOtp(request, response) {
   /// 📩 Kullanıcı şifre sıfırlama talebi gönderir → OTP alır → Bu API'ye girilen OTP'yi yollar ↓↓
   //  → Doğrulama başarılıysa yeni şifre belirleyebilir. ✅
   try {
-    const { email, otp } = request.body;
+    const { emailOrUsername, otp } = request.body;
 
-    if (!email || !otp) {
+    if (!emailOrUsername || !otp) {
       return response.status(400).json({
         message: "Provide required field email, otp.",
         error: true,
@@ -325,11 +327,13 @@ export async function verifyForgotPasswordOtp(request, response) {
       });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    });
 
     if (!user) {
       return response.status(400).json({
-        message: "Email not available",
+        message: "Email or username not available",
         error: true,
         success: false,
       });
@@ -352,16 +356,15 @@ export async function verifyForgotPasswordOtp(request, response) {
         success: false,
       });
     }
-    // if otp is not expired
-    // otp === user.forgot_password_otp
+
     return response.json({
       message: "Verify otp successfully",
       error: false,
       success: true,
     });
   } catch (error) {
-    response.status(500).json({
-      message: error.message || error,
+    return response.status(500).json({
+      message: error.message || "Internal server error",
       error: true,
       success: false,
     });

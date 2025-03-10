@@ -65,9 +65,11 @@ const Register = () => {
     }
 
     try {
-      const response = await Axios({
-        ...SummaryApi.register,
-        data: data,
+      const response = await Axios.post("/api/user/register", {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        username: data.username,
       });
 
       if (response.data.error) {
