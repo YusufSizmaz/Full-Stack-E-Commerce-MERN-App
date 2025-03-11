@@ -87,7 +87,7 @@ const Register = () => {
 
         setTimeout(() => {
           navigate("/login");
-        }, 3000); // 3 saniye bekle
+        }, 2000); // 1 saniye bekle
 
         console.log("response", response);
       }
@@ -186,11 +186,11 @@ const Register = () => {
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="cursor-pointer"
               >
-                {showConfirmPassword ? (
+                {/* {showConfirmPassword ? (
                   <FaRegEye size={20} color="red" />
                 ) : (
                   <FaRegEyeSlash size={22} color="green" />
-                )}
+                )} */}
               </div>
             </div>
           </div>

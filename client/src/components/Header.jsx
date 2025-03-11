@@ -5,12 +5,16 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { BsCart4 } from "react-icons/bs";
 import useMobile from "../hooks/useMobile";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const isMobile = useMobile(); // Hata düzeltildi
   const location = useLocation();
   const isSearchPage = location.pathname === "/search";
   const navigate = useNavigate();
+  const user = useSelector((state) => state?.user);
+
+  console.log("user from store", user);
 
   const redirectToLoginPage = () => {
     navigate("/login");

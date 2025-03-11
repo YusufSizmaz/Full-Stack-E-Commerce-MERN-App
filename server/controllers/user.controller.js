@@ -374,15 +374,17 @@ export async function verifyForgotPasswordOtp(request, response) {
 // Reset the password
 export async function resetpassword(request, response) {
   try {
-    const { email, newPassword, confirmPassword } = request.body;
+    const { emailOrUsername, newPassword, confirmPassword } = request.body.data;
 
-    if (!email || !newPassword || !confirmPassword) {
+    if (!emailOrUsername || !newPassword || !confirmPassword) {
       return response.status(400).json({
         message: "Provide required fields email , newPassword, confirmPassword",
       });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    });
 
     if (!user) {
       return response.status(400).json({
@@ -471,6 +473,28 @@ export async function refreshToken(request, response) {
   } catch (error) {
     return response.status(500).json({
       message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Kullanıcı bilgisi almak
+export async function UserDetails(request, response) {
+  try {
+    const userId = request.userId;
+
+    const user = await UserModel.findById(userId);
+
+    return response.json({
+      message: "user details",
+      data: user,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: "Something is wrong",
       error: true,
       success: false,
     });

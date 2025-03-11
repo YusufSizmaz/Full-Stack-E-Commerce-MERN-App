@@ -56,7 +56,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await Axios({
+      const response = await Axios.put("/api/user/reset-password", {
         ...SummaryApi.resetPassword, // Change
         data: data,
       });

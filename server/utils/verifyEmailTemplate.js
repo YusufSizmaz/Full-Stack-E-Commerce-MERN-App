@@ -9,52 +9,47 @@ const verifyEmailTemplate = (name, url) => {
             <style>
                 body {
                     font-family: 'Arial', sans-serif;
-                    background-color: #fff8dc;
+                    background-color: #f9f9f9;
                     margin: 0;
                     padding: 0;
                 }
-                table {
-                    width: 100%;
-                    height: 100vh;
-                    text-align: center;
-                }
                 .container {
                     width: 100%;
-                    max-width: 500px;
-                    background: #fff;
-                    padding: 35px;
+                    max-width: 600px;
+                    background: #ffffff;
+                    padding: 40px;
                     border-radius: 12px;
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-                    margin: auto;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                    margin: 50px auto;
+                    text-align: center;
                 }
                 .icon {
-                    width: 85px;
-                    margin: 0 auto 15px;
+                    width: 100px;
+                    margin: 0 auto 20px;
                 }
                 .icon img {
                     width: 100%;
                 }
                 h2 {
                     color: #d69e2e;
-                    font-size: 22px;
+                    font-size: 24px;
                     font-weight: bold;
-                    margin: 10px 0;
+                    margin: 20px 0;
                 }
                 .welcome {
-                    font-size: 17px;
-                    color: #8b4513;
-                    font-weight: bold;
-                    margin-bottom: 8px;
+                    font-size: 18px;
+                    color: #333;
+                    margin-bottom: 10px;
                 }
                 p {
-                    color: #654321;
-                    font-size: 15px;
-                    line-height: 1.6;
+                    color: #666;
+                    font-size: 16px;
+                    line-height: 1.5;
                     margin: 10px 0;
                 }
                 .button {
                     display: inline-block;
-                    padding: 12px 26px;
+                    padding: 12px 30px;
                     font-size: 16px;
                     color: #ffffff;
                     background-color: #ffba08;
@@ -62,36 +57,30 @@ const verifyEmailTemplate = (name, url) => {
                     border-radius: 8px;
                     font-weight: bold;
                     transition: background 0.3s;
-                    margin-top: 15px;
+                    margin-top: 20px;
                 }
                 .button:hover {
                     background-color: #ff9f00;
                 }
                 .footer {
-                    margin-top: 18px;
+                    margin-top: 20px;
                     font-size: 12px;
-                    color: #8b4513;
+                    color: #888;
                 }
             </style>
         </head>
         <body>
-            <table>
-                <tr>
-                    <td align="center">
-                        <div class="container">
-                            <div class="icon">
-                                <img src="https://your-logo-url.com/logo.png" alt="Email Verify Icon">
-                            </div>
-                            <p class="welcome">Hello, ${name}!</p>
-                            <h2>Verify Your Email</h2>
-                            <p>You're almost there! Click the button below to verify your email and activate your account.</p>
-                            <a href="${url}" class="button">Verify Email</a>
-                            <p>If you didn't request this, you can safely ignore this email.</p>
-                            <p class="footer">Need help? Contact our support team.</p>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div class="container">
+                <div class="icon">
+                    <img src="https://i.hizliresim.com/rrd46xe.png" alt="Email Verify Icon">
+                </div>
+                <p class="welcome">Hello, ${name}!</p>
+                <h2>Verify Your Email</h2>
+                <p>You're almost there! Click the button below to verify your email and activate your account.</p>
+                <a href="${url}" class="button">Verify Email</a>
+                <p>If you didn't request this, you can safely ignore this email.</p>
+                <p class="footer">Need help? Contact our support team.</p>
+            </div>
         </body>
         </html>
     `;

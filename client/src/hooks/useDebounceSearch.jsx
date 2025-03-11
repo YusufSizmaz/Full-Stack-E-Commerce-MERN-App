@@ -10,7 +10,7 @@ const useDelayedHandleChange = (setData) => {
         ...prev,
         [name]: value,
       }));
-    }, 80000), // 500ms bekler
+    }, 500), // 500ms bekler
     [setData]
   );
 
