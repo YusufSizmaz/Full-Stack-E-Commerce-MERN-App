@@ -120,14 +120,14 @@ export async function loginController(request, response) {
       return response.status(400).json({
         message: "User not register.",
         error: true,
-        succeess: false,
+        success: false,
       });
     }
     if (user.status !== "Active") {
       return response.status(400).json({
         message: "Contact to Admin",
         error: true,
-        succes: false,
+        success: false,
       });
     }
 
@@ -136,12 +136,16 @@ export async function loginController(request, response) {
       return response.status(400).json({
         message: "Check your password",
         error: true,
-        succes: false,
+        success: false,
       });
     }
 
     const accessToken = await generatedAccessToken(user._id);
     const refreshToken = await generatedRefreshToken(user._id);
+
+    const updateUser = await UserModel.findByIdAndUpdate(user?._id, {
+      last_login_date: new Date(),
+    });
 
     const cookiesOption = {
       httpOnly: true,
@@ -187,13 +191,13 @@ export async function logoutController(request, response) {
     return response.json({
       message: "Logout successfully",
       error: false,
-      succeess: true,
+      success: true,
     });
   } catch (error) {
     return response.status(500).json({
       message: error.message || error,
       error: true,
-      succeess: false,
+      success: false,
     });
   }
 }
@@ -211,7 +215,9 @@ export async function uploadAvatar(request, response) {
     });
 
     return response.json({
-      message: "upload profile",
+      message: "Profil fotoğrafı başarılı olarak güncellendi. ",
+      success: true,
+      error: false,
       data: {
         _id: userId,
         avatar: upload.url,
@@ -313,6 +319,7 @@ export async function forgotPasswordController(request, response) {
   }
 }
 
+//Sifre degistirme onaylama
 export async function verifyForgotPasswordOtp(request, response) {
   /// 📩 Kullanıcı şifre sıfırlama talebi gönderir → OTP alır → Bu API'ye girilen OTP'yi yollar ↓↓
   //  → Doğrulama başarılıysa yeni şifre belirleyebilir. ✅
@@ -356,6 +363,11 @@ export async function verifyForgotPasswordOtp(request, response) {
         success: false,
       });
     }
+
+    const updateUser = await UserModel.findByIdAndUpdate(user?._id, {
+      forgot_password_otp: "",
+      forgot_password_expiry: "",
+    });
 
     return response.json({
       message: "Verify otp successfully",
@@ -428,7 +440,7 @@ export async function refreshToken(request, response) {
   try {
     const refreshToken =
       request.cookies.refreshToken ||
-      request?.header?.authorizition?.split(" ")[1];
+      request?.headers?.authorizition?.split(" ")[1];
 
     if (!refreshToken) {
       return response.status(402).json({
@@ -484,7 +496,9 @@ export async function UserDetails(request, response) {
   try {
     const userId = request.userId;
 
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(userId).select(
+      "-password -refresh_token"
+    );
 
     return response.json({
       message: "user details",

@@ -5,7 +5,7 @@ export const AxiosToastError = (error) => {
 };
 
 export const AxiosToastSuccess = (success) => {
-  toast.success(success?.response?.data?.message); // Burada success kullanmalısınız
+  toast.success(success?.response?.data?.message);
 };
 
 export default AxiosToastError;

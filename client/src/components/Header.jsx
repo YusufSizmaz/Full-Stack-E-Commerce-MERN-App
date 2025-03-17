@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import Search from "./Search";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -6,18 +6,32 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import { BsCart4 } from "react-icons/bs";
 import useMobile from "../hooks/useMobile";
 import { useSelector } from "react-redux";
+import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
+import UserMenu from "./UserMenu";
 
 const Header = () => {
-  const isMobile = useMobile(); // Hata düzeltildi
+  const isMobile = useMobile();
   const location = useLocation();
   const isSearchPage = location.pathname === "/search";
   const navigate = useNavigate();
   const user = useSelector((state) => state?.user);
-
-  console.log("user from store", user);
+  const [openUserMenu, setOpenUserMenu] = useState(false);
 
   const redirectToLoginPage = () => {
     navigate("/login");
+  };
+
+  const handleCloseUserMenu = () => {
+    setOpenUserMenu(false);
+  };
+
+  const handleMobileUser = () => {
+    if (!user._id) {
+      navigate("/login");
+      return;
+    }
+
+    navigate("/user");
   };
 
   return (
@@ -52,18 +66,45 @@ const Header = () => {
           {/* Login and My Cart */}
           <div>
             {/* User icon (mobile only) */}
-            <button className="text-neutral-600 lg:hidden">
+            <button
+              className="text-neutral-600 lg:hidden "
+              onClick={handleMobileUser}
+            >
               <FaRegCircleUser size={26} />
             </button>
 
             {/* Desktop */}
             <div className="hidden lg:flex items-center gap-10">
-              <button
-                onClick={redirectToLoginPage}
-                className="cursor-pointer text-lg px-2"
-              >
-                Login
-              </button>
+              {user?._id ? (
+                <div className="relative">
+                  <div
+                    onClick={() => setOpenUserMenu((preve) => !preve)}
+                    className="flex select-none items-center gap-1 cursor-pointer"
+                  >
+                    <p>Account</p>
+
+                    {openUserMenu ? (
+                      <GoTriangleUp size={25} />
+                    ) : (
+                      <GoTriangleDown size={25} />
+                    )}
+                  </div>
+                  {openUserMenu && (
+                    <div className="absolute right-0 top-12">
+                      <div className="bg-white rounded p-4 min-w-52 lg:shadow-lg">
+                        <UserMenu close={handleCloseUserMenu} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={redirectToLoginPage}
+                  className="cursor-pointer text-lg px-2"
+                >
+                  Login
+                </button>
+              )}
 
               <button className="flex items-center gap-2 bg-green-700 hover:bg-green-600 px-3 py-3 rounded text-white">
                 {/* Add to cart icon */}

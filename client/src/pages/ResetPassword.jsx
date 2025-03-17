@@ -5,6 +5,7 @@ import SummaryApi from "../common/SummaryApi";
 import toast from "react-hot-toast";
 import AxiosToastError from "../utils/AxiosToastError";
 import Axios from "../utils/Axios";
+import useTogglePassword from "../hooks/useState";
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -14,8 +15,13 @@ const ResetPassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const {
+    showPassword,
+    togglePassword,
+    showConfirmPassword,
+    toggleConfirmPassword,
+  } = useTogglePassword();
 
   const valideValue = Object.values(data).every((el) => el);
 
@@ -25,27 +31,17 @@ const ResetPassword = () => {
     }
 
     if (location?.state?.emailOrUsername) {
-      setData((preve) => {
-        return {
-          ...preve,
-          emailOrUsername: location?.state?.emailOrUsername,
-        };
-      });
+      setData((prev) => ({
+        ...prev,
+        emailOrUsername: location?.state?.emailOrUsername,
+      }));
     }
-  }, []);
+  }, [location, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
+    setData((prev) => ({ ...prev, [name]: value }));
   };
-
-  console.log("data reset password", data);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,7 +53,7 @@ const ResetPassword = () => {
 
     try {
       const response = await Axios.put("/api/user/reset-password", {
-        ...SummaryApi.resetPassword, // Change
+        ...SummaryApi.resetPassword,
         data: data,
       });
       if (response.data.error) {
@@ -94,10 +90,7 @@ const ResetPassword = () => {
                 onChange={handleChange}
                 placeholder="Enter your new password"
               />
-              <div
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="cursor-pointer"
-              >
+              <div onClick={togglePassword} className="cursor-pointer">
                 {showPassword ? (
                   <FaRegEye size={20} color="red" />
                 ) : (
@@ -119,10 +112,7 @@ const ResetPassword = () => {
                 onChange={handleChange}
                 placeholder="Enter your confirm password"
               />
-              <div
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="cursor-pointer"
-              >
+              <div onClick={toggleConfirmPassword} className="cursor-pointer">
                 {showConfirmPassword ? (
                   <FaRegEye size={20} color="red" />
                 ) : (
@@ -143,7 +133,7 @@ const ResetPassword = () => {
         </form>
 
         <p>
-          Already have account?{" "}
+          Already have an account?{" "}
           <Link
             to={"/login"}
             className="text-green-600 font-semibold hover:text-green-700 "

@@ -6,5 +6,5 @@
 }
 
 body {
-  @apply bg-blue-50;
+  @apply bg-blue-50 text-neutral-800;
 }

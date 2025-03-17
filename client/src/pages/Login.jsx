@@ -4,7 +4,11 @@ import toast from "react-hot-toast";
 import SummaryApi from "../common/SummaryApi";
 import Axios from "../utils/Axios";
 import { Link, useNavigate } from "react-router-dom";
-import AxiosToastError from "./../utils/AxiosToastError";
+import AxiosToastError from "../utils/AxiosToastError";
+import fetchUserDetails from "../utils/fetchUserDetails";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "../store/userSlice";
+import useTogglePassword from "../hooks/useState"; // Doğru import
 
 const Login = () => {
   const [data, setData] = useState({
@@ -12,22 +16,20 @@ const Login = () => {
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
+  const { showPassword, togglePassword } = useTogglePassword();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const valideValue = Object.values(data).every((el) => el);
+  const isValid = Object.values(data).every((el) => el);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,39 +37,37 @@ const Login = () => {
     try {
       const response = await Axios({
         ...SummaryApi.login,
-        data: {
-          emailOrUsername: data.emailOrUsername,
-          password: data.password,
-        },
+        data: data,
       });
 
       if (response.data.error) {
         toast.error(response.data.message);
+        return;
       }
-      if (response.data.success) {
-        toast.success(response.data.message);
-        localStorage.setItem("accessToken", response.data.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.data.refreshToken);
-        setData({
-          emailOrUsername: "",
-          password: "",
-        });
 
-        navigate("/");
-      }
+      toast.success(response.data.message);
+      localStorage.setItem("accessToken", response.data.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.data.refreshToken);
+
+      const userDetails = await fetchUserDetails();
+      dispatch(setUserDetails(userDetails.data));
+
+      setData({ emailOrUsername: "", password: "" });
+
+      navigate("/");
     } catch (error) {
       AxiosToastError(error);
     }
   };
 
   return (
-    <section className="w-full container mx-auto px-2 ">
+    <section className="w-full container mx-auto px-2">
       <div className="bg-white my-4 w-full max-w-lg mx-auto rounded p-7 shadow-2xl">
         <p className="font-semibold">Login</p>
 
         <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
           <div className="grid gap-1">
-            <label htmlFor="emailOrUsername">Email veya Username :</label>
+            <label htmlFor="emailOrUsername">Email veya Username:</label>
             <input
               type="text"
               id="emailOrUsername"
@@ -80,7 +80,7 @@ const Login = () => {
           </div>
 
           <div className="grid gap-1">
-            <label htmlFor="password">Password :</label>
+            <label htmlFor="password">Password:</label>
             <div className="bg-blue-50 p-2 border rounded flex items-center outline-none border-gray-300 focus-within:border-amber-300">
               <input
                 type={showPassword ? "text" : "password"}
@@ -91,10 +91,7 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="Enter your password"
               />
-              <div
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="cursor-pointer"
-              >
+              <div onClick={togglePassword} className="cursor-pointer">
                 {showPassword ? (
                   <FaRegEye size={20} color="red" />
                 ) : (
@@ -104,16 +101,16 @@ const Login = () => {
             </div>
             <Link
               to={"/forgot-password"}
-              className="block ml-auto hover:text-yellow-500 "
+              className="block ml-auto hover:text-yellow-500"
             >
-              Forgot Password ?
+              Forgot Password?
             </Link>
           </div>
 
           <button
-            disabled={!valideValue}
+            disabled={!isValid}
             className={`${
-              valideValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500"
+              isValid ? "bg-green-800 hover:bg-green-700" : "bg-gray-500"
             } text-white py-2 rounded font-semibold my-3 tracking-wide`}
           >
             Login
@@ -124,7 +121,7 @@ const Login = () => {
           Don't have an existing account?{" "}
           <Link
             to={"/register"}
-            className="text-green-600 font-semibold hover:text-green-700 "
+            className="text-green-600 font-semibold hover:text-green-700"
           >
             Register
           </Link>

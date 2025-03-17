@@ -6,7 +6,7 @@ import Axios from "../utils/Axios";
 import { emailRegex, passwordRegex } from "../utils/Regex";
 import { Link, useNavigate } from "react-router-dom";
 import AxiosToastError from "./../utils/AxiosToastError";
-import login from "./Login";
+import useTogglePassword from "../hooks/useState";
 
 const Register = () => {
   const [data, setData] = useState({
@@ -17,20 +17,22 @@ const Register = () => {
     username: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const {
+    showPassword,
+    togglePassword,
+    showConfirmPassword,
+    toggleConfirmPassword,
+  } = useTogglePassword();
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setData((prev) => {
-      return {
-        ...prev,
-        [name]: value,
-      };
-    });
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const valideValue = Object.values(data).every((el) => el);
@@ -38,19 +40,16 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Şifre ve onay şifresi eşleşmiyor ise
     if (data.password !== data.confirmPassword) {
       toast.error("Şifreler uyuşmuyor.");
       return;
     }
 
-    // E-posta geçerli değilse
     if (!emailRegex.test(data.email)) {
       toast.error("Geçerli bir email giriniz");
       return;
     }
 
-    // Şifre geçerli değilse
     if (!passwordRegex.test(data.password)) {
       toast.error(
         "Şifre en az bir büyük harf, bir küçük harf, bir rakam içermeli ve en az 8 karakter uzunluğunda olmalıdır"
@@ -58,7 +57,6 @@ const Register = () => {
       return;
     }
 
-    // Kullanıcı adı boşsa
     if (!data.username) {
       toast.error("Kullanıcı adı zorunludur.");
       return;
@@ -87,7 +85,7 @@ const Register = () => {
 
         setTimeout(() => {
           navigate("/login");
-        }, 2000); // 1 saniye bekle
+        }, 2000);
 
         console.log("response", response);
       }
@@ -122,7 +120,6 @@ const Register = () => {
             <input
               type="text"
               id="username"
-              autoFocus
               className="bg-blue-50 p-2 rounded border outline-none border-gray-300 focus-within:border-amber-300"
               name="username"
               value={data.username}
@@ -149,7 +146,7 @@ const Register = () => {
             <label htmlFor="password">Password :</label>
             <div className="bg-blue-50 p-2 border rounded flex items-center outline-none border-gray-300 focus-within:border-amber-300">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"} // Doğru değişken kullanımı
                 id="password"
                 className="w-full outline-none"
                 name="password"
@@ -157,10 +154,7 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Enter your password"
               />
-              <div
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="cursor-pointer"
-              >
+              <div onClick={togglePassword} className="cursor-pointer">
                 {showPassword ? (
                   <FaRegEye size={20} color="red" />
                 ) : (
@@ -174,7 +168,7 @@ const Register = () => {
             <label htmlFor="confirmPassword">Confirm Password :</label>
             <div className="bg-blue-50 p-2 border rounded flex items-center outline-none border-gray-300 focus-within:border-amber-300">
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? "text" : "password"} // Doğru değişken kullanımı
                 id="confirmPassword"
                 className="w-full outline-none"
                 name="confirmPassword"
@@ -182,15 +176,12 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Enter your confirm password"
               />
-              <div
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="cursor-pointer"
-              >
-                {/* {showConfirmPassword ? (
+              <div onClick={toggleConfirmPassword} className="cursor-pointer">
+                {showConfirmPassword ? (
                   <FaRegEye size={20} color="red" />
                 ) : (
                   <FaRegEyeSlash size={22} color="green" />
-                )} */}
+                )}
               </div>
             </div>
           </div>
@@ -206,7 +197,7 @@ const Register = () => {
         </form>
 
         <p>
-          Already have account?{" "}
+          Already have an account?{" "}
           <Link
             to={"/login"}
             className="text-green-600 font-semibold hover:text-green-700 "
