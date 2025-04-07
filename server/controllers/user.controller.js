@@ -257,7 +257,7 @@ export async function updateUserDetails(request, response) {
     // findByIdAndUpdate veritabanında güncellemesi için.
 
     return response.json({
-      message: "updated user successfully",
+      message: "Kullanıcı bilgileri güncellendi.",
       error: false,
       succes: true,
       data: updateUser,
