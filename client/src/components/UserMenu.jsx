@@ -44,15 +44,18 @@ const UserMenu = ({ close }) => {
     <div>
       <div className="font-semibold">My Account</div>
       <div className="text-sm flex items-center gap-2">
-        <span className="max-w-52 text-ellipsis line-clamp-1 bg-green-200 rounded">
-          {user.name || user.mobile}
+        <span className="max-w-52 text-ellipsis line-clamp-1">
+          {user.name || user.mobile}{" "}
+          <span className="text-medium text-red-600">
+            {user.role === "ADMIN" ? "(Admin)" : ""}
+          </span>
         </span>
         <Link
           onClick={handleClose}
           to={"/dashboard/profile"}
-          className="hover:text-amber-400"
+          className="hover:text-primary-200"
         >
-          <HiOutlineExternalLink size={20} />
+          <HiOutlineExternalLink size={15} />
         </Link>
       </div>
 
@@ -61,11 +64,44 @@ const UserMenu = ({ close }) => {
       <div className="text-sm grid gap-1">
         <Link
           onClick={handleClose}
+          to={"/dashboard/category"}
+          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+        >
+          Category
+        </Link>
+
+        <Link
+          onClick={handleClose}
+          to={"/dashboard/subcategory"}
+          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+        >
+          Sub Category
+        </Link>
+
+        <Link
+          onClick={handleClose}
+          to={"/dashboard/upload-product"}
+          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+        >
+          Upload Product
+        </Link>
+
+        <Link
+          onClick={handleClose}
+          to={"/dashboard/product"}
+          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+        >
+          Product
+        </Link>
+
+        <Link
+          onClick={handleClose}
           to={"/dashboard/myorders"}
           className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
         >
           My Orders
         </Link>
+
         <Link
           onClick={handleClose}
           to={"/dashboard/address"}

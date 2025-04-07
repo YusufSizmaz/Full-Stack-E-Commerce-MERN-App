@@ -22,8 +22,8 @@ function App() {
 
   return (
     <>
-      <main className="min-h-[94vh]">
-        <Header />
+      <Header />
+      <main className="min-h-[78vh]">
         <Outlet />
       </main>
       <Footer />
