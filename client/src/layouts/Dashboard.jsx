@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const Dashboard = () => {
   return (
-    <section className="bg-white ">
+    <section className="bg-white  ">
       {/* mt-24: Navbar yüksekliğine göre margin (navbar sabitse gerekli) */}
       <div className="flex h-full ">
         {/* Sol Panel - %30 */}
@@ -13,7 +13,7 @@ const Dashboard = () => {
         </div>
 
         {/* Sağ Panel - %70 */}
-        <div className="w-full min-h-[76vh] lg:w-[70%] px-1 py-1 ">
+        <div className="w-full min-h-[85vh] lg:w-[70%] px-1 py-1 ">
           <Outlet />
         </div>
       </div>

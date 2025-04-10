@@ -259,7 +259,7 @@ export async function updateUserDetails(request, response) {
     return response.json({
       message: "Kullanıcı bilgileri güncellendi.",
       error: false,
-      succes: true,
+      success: true,
       data: updateUser,
     });
   } catch (error) {

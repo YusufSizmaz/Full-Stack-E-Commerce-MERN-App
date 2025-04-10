@@ -51,6 +51,7 @@ const Profile = () => {
       });
 
       const { data: responseData } = response;
+      console.log(responseData);
 
       if (responseData.success) {
         toast.success(responseData.message);
@@ -65,7 +66,7 @@ const Profile = () => {
   };
 
   return (
-    <div>
+    <div className="p-4">
       {/* *PROFILE UPLOAD  AND DISPLAY IMAGE*/}
       <div className="w-20 h-20 bg-red-400 flex items-center justify-center rounded-full overflow-hidden drop-shadow-2xl">
         {user.avatar ? (
