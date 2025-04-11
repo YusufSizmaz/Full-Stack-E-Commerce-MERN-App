@@ -1,8 +1,12 @@
 import React from "react";
 import UserMenu from "../components/UserMenu";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
+  const user = useSelector((state) => state.user);
+  console.log("user dashboard", user);
+
   return (
     <section className="bg-white  ">
       {/* mt-24: Navbar yüksekliğine göre margin (navbar sabitse gerekli) */}

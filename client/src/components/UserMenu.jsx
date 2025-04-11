@@ -8,6 +8,7 @@ import { logout } from "../store/userSlice";
 import toast from "react-hot-toast";
 import { AxiosToastError, AxiosToastSuccess } from "../utils/AxiosToastError";
 import { HiOutlineExternalLink } from "react-icons/hi";
+import isAdmin from "../utils/isAdmin";
 
 const UserMenu = ({ close }) => {
   const user = useSelector((state) => state.user);
@@ -62,37 +63,45 @@ const UserMenu = ({ close }) => {
       <Divider />
 
       <div className="text-sm grid gap-1">
-        <Link
-          onClick={handleClose}
-          to={"/dashboard/category"}
-          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
-        >
-          Category
-        </Link>
+        {isAdmin(user.role) && (
+          <Link
+            onClick={handleClose}
+            to={"/dashboard/category"}
+            className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+          >
+            Category
+          </Link>
+        )}
 
-        <Link
-          onClick={handleClose}
-          to={"/dashboard/subcategory"}
-          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
-        >
-          Sub Category
-        </Link>
+        {isAdmin(user.role) && (
+          <Link
+            onClick={handleClose}
+            to={"/dashboard/subcategory"}
+            className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+          >
+            Sub Category
+          </Link>
+        )}
 
-        <Link
-          onClick={handleClose}
-          to={"/dashboard/upload-product"}
-          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
-        >
-          Upload Product
-        </Link>
+        {isAdmin(user.role) && (
+          <Link
+            onClick={handleClose}
+            to={"/dashboard/upload-product"}
+            className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+          >
+            Upload Product
+          </Link>
+        )}
 
-        <Link
-          onClick={handleClose}
-          to={"/dashboard/product"}
-          className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
-        >
-          Product
-        </Link>
+        {isAdmin(user.role) && (
+          <Link
+            onClick={handleClose}
+            to={"/dashboard/product"}
+            className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
+          >
+            Product
+          </Link>
+        )}
 
         <Link
           onClick={handleClose}
