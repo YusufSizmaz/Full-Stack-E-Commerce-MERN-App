@@ -29,7 +29,7 @@ const UploadSubCategoryModel = ({ close }) => {
     const response = await uploadImage(file);
     const { data: ImageResponse } = response;
 
-    setData((preve) => {
+    setSubCategoryData((preve) => {
       return {
         ...preve,
         image: ImageResponse.data.url,
@@ -84,6 +84,13 @@ const UploadSubCategoryModel = ({ close }) => {
                 />
               </label>
             </div>
+          </div>
+
+          <div className="grid gap-1">
+            <label htmlFor="">Select Category</label>
+            <select className="bg-blue-50 border p-3">
+              <option value={""}>Select Category</option>
+            </select>
           </div>
         </form>
       </div>
