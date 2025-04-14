@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import uploadImage from "../utils/UploadImage";
+import { useSelector } from "react-redux";
+<IoClose> sadasd</IoClose>;
 
 const UploadSubCategoryModel = ({ close }) => {
   const [subCategoryData, setSubCategoryData] = useState({
@@ -8,6 +10,8 @@ const UploadSubCategoryModel = ({ close }) => {
     image: "",
     category: [],
   });
+
+  const allCategory = useSelector((state) => state.product.allCategory);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,6 +41,18 @@ const UploadSubCategoryModel = ({ close }) => {
     });
   };
 
+  const handleRemoveCategorySelected = (categoryId) => {
+    const index = subCategoryData.category.findIndex(
+      (el) => el._id === categoryId
+    );
+    const newSubCategoryData = subCategoryData.category.splice(index, 1);
+    setSubCategoryData((preve) => {
+      return {
+        ...preve,
+      };
+    });
+  };
+
   return (
     <section className="fixed top-0 right-0 bottom-0 left-0 bg-neutral-800/40 z-50 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-white p-4 rounded">
@@ -57,6 +73,7 @@ const UploadSubCategoryModel = ({ close }) => {
               className="p-3 bg-blue-50 border  border-gray-300 outline-none focus-within:border-amber-300 rounded"
             />
           </div>
+
           <div className="grid gap-1">
             <p>Image</p>
             <div className="flex flex-col lg:flex-row items-center gap-3">
@@ -86,11 +103,62 @@ const UploadSubCategoryModel = ({ close }) => {
             </div>
           </div>
 
-          <div className="grid gap-1">
-            <label htmlFor="">Select Category</label>
-            <select className="bg-blue-50 border p-3">
-              <option value={""}>Select Category</option>
-            </select>
+          <div className="grid gap-1 ">
+            <label>Select Category</label>
+            <div className="border border-amber-300  focus-within:border-amber-300 rounded">
+              {/*Display value*/}
+
+              <div className="flex flex-wrap gap-2 ">
+                {subCategoryData.category.map((cat, index) => {
+                  return (
+                    <p
+                      key={cat._id + "selectedValue"}
+                      className="bg-white shadow-md px-1 m-1 flex items-center gap-2 "
+                    >
+                      {cat.name}
+                      <div
+                        className="cursor-pointer hover:text-red-500"
+                        onClick={() => handleRemoveCategorySelected(cat._id)}
+                      >
+                        <IoClose size={20} />
+                      </div>
+                    </p>
+                  );
+                })}
+              </div>
+
+              {/*Select Category*/}
+              <select
+                className="w-full p-2 border  border-amber-300 rounded outline-none"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const categoryDetails = allCategory.find(
+                    (el) => el._id == value
+                  );
+                  setSubCategoryData((preve) => {
+                    return {
+                      ...preve,
+                      category: [...preve.category, categoryDetails],
+                    };
+                  });
+                }}
+              >
+                <option value={""} disabled>
+                  Select Category
+                </option>
+
+                {allCategory.map((category, index) => {
+                  return (
+                    <option
+                      value={category?._id}
+                      key={category._id + "subcategory"}
+                    >
+                      {category?.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
         </form>
       </div>
