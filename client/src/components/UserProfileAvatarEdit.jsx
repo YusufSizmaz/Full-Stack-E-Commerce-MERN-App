@@ -44,6 +44,7 @@ const UserProfileAvatarEdit = ({ close }) => {
       setLoading(false);
     }
   };
+
   return (
     <section className="fixed top-0 bottom-0 left-0 right-0 bg-[rgba(17,17,17,0.6)] p-4 flex items-center justify-center">
       <div className="bg-white max-w-sm w-full rounded p-4 flex flex-col items-center transition">

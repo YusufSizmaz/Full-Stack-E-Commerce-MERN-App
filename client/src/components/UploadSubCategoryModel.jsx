@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import uploadImage from "../utils/UploadImage";
 import { useSelector } from "react-redux";
-<IoClose> sadasd</IoClose>;
+import Axios from "../utils/Axios";
+import SummaryApi from "../common/SummaryApi";
+import toast from "react-hot-toast";
+import AxiosToastError from "../utils/AxiosToastError";
 
 const UploadSubCategoryModel = ({ close }) => {
   const [subCategoryData, setSubCategoryData] = useState({
@@ -18,7 +21,7 @@ const UploadSubCategoryModel = ({ close }) => {
 
     setSubCategoryData((preve) => {
       return {
-        ...ProgressEvent,
+        ...preve,
         [name]: value,
       };
     });
@@ -53,6 +56,26 @@ const UploadSubCategoryModel = ({ close }) => {
     });
   };
 
+  const handleSubmitSubCategory = async () => {
+    try {
+      const response = await Axios({
+        ...SummaryApi.createSubCategory,
+        data: subCategoryData,
+      });
+
+      const { data: responseData } = response;
+
+      if (responseData.success) {
+        toast.success(responseData.message);
+        if (close) {
+          close();
+        }
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    }
+  };
+
   return (
     <section className="fixed top-0 right-0 bottom-0 left-0 bg-neutral-800/40 z-50 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-white p-4 rounded">
@@ -62,7 +85,7 @@ const UploadSubCategoryModel = ({ close }) => {
             <IoClose onClick={close} size={25} className="hover:text-red-700" />
           </button>
         </div>
-        <form className="my-3 grid gap-3">
+        <form className="my-3 grid gap-3" onSubmit={handleSubmitSubCategory}>
           <div className="grid gap-1">
             <label htmlFor="name">Name</label>
             <input
@@ -160,6 +183,20 @@ const UploadSubCategoryModel = ({ close }) => {
               </select>
             </div>
           </div>
+
+          <button
+            className={`px-4 py-1 border
+            ${
+              subCategoryData?.name &&
+              subCategoryData?.image &&
+              subCategoryData?.category[0]
+                ? "bg-amber-300 hover:bg-amber-400"
+                : "bg-gray-200"
+            } 
+            font-semibold            `}
+          >
+            Submit
+          </button>
         </form>
       </div>
     </section>
