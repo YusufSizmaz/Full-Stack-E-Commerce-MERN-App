@@ -56,7 +56,8 @@ const UploadSubCategoryModel = ({ close }) => {
     });
   };
 
-  const handleSubmitSubCategory = async () => {
+  const handleSubmitSubCategory = async (e) => {
+    e.preventDefault();
     try {
       const response = await Axios({
         ...SummaryApi.createSubCategory,
@@ -64,6 +65,8 @@ const UploadSubCategoryModel = ({ close }) => {
       });
 
       const { data: responseData } = response;
+
+      console.log("responseData", responseData);
 
       if (responseData.success) {
         toast.success(responseData.message);
