@@ -6,8 +6,11 @@ import SummaryApi from "../common/SummaryApi";
 import DisplayTable from "../components/DisplayTable";
 import { createColumnHelper } from "@tanstack/react-table";
 import ViewImage from "../components/ViewImage";
-import { LuPencil } from "react-icons/lu";
+import { BsFillPencilFill } from "react-icons/bs";
 import { MdOutlineDelete } from "react-icons/md";
+import EditSubCategory from "../components/EditSubCategory";
+import ConfirmBox from "../components/ConfirmBox";
+import toast from "react-hot-toast";
 
 const SubCategoryPage = () => {
   const [openAddSubCategory, setOpenAddSubCategory] = useState(false);
@@ -15,6 +18,14 @@ const SubCategoryPage = () => {
   const [loading, setLoading] = useState(false);
   const columnHelper = createColumnHelper();
   const [ImageURL, setImageURL] = useState("");
+  const [openEdit, setOpenEdit] = useState(false);
+  const [editData, setEditData] = useState({
+    _id: "",
+  });
+  const [deleteSubCategory, setDeleteSubCategory] = useState({
+    _id: "",
+  });
+  const [openDeleteConfirmBox, setOpenDeleteConfirmBox] = useState(false);
 
   const fetchSubCategory = async () => {
     try {
@@ -82,14 +93,22 @@ const SubCategoryPage = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center justify-center gap-3">
-            <button className="p-2 bg-green-100 hover:bg-green-200 cursor-pointer">
-              <LuPencil size={20} />
-            </button>
             <button
               onClick={() => {
-                handleDelete();
+                setOpenEdit(true);
+                setEditData(row.original);
               }}
-              className="p-2 bg-red-100  hover:bg-red-200  cursor-pointer"
+              className="p-2 bg-green-200 hover:text-green-600 cursor-pointer  rounded-full"
+            >
+              <BsFillPencilFill size={18} />
+            </button>
+
+            <button
+              onClick={() => {
+                setOpenDeleteConfirmBox(true);
+                setDeleteSubCategory(row.original);
+              }}
+              className="p-2 bg-red-200  hover:text-red-600  cursor-pointer rounded-full"
             >
               <MdOutlineDelete size={20} />
             </button>
@@ -99,16 +118,39 @@ const SubCategoryPage = () => {
     }),
   ];
 
+  const handleDeleteSubCategory = async () => {
+    try {
+      const response = await Axios({
+        ...SummaryApi.deleteSubCategory,
+        data: deleteSubCategory,
+      });
+
+      const { data: responseData } = response;
+
+      if (responseData.success) {
+        toast.success(responseData.message);
+        fetchSubCategory();
+        setOpenDeleteConfirmBox(false);
+        setDeleteSubCategory({ _id: "" });
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    }
+  };
+
   return (
     <section className="p-4">
       <div className="mb-4 bg-white shadow-md flex items-center justify-between p-2">
         <h2 className="font-semibold">Sub Category</h2>
-        <button className="text-sm border border-amber-300 hover:bg-amber-400 hover:text-white px-3 py-1 rounded">
+        <button
+          onClick={() => setOpenAddSubCategory(true)}
+          className="text-sm border border-amber-300 hover:bg-amber-400 hover:text-white px-3 py-1 rounded"
+        >
           Add Sub Category
         </button>
       </div>
 
-      <div>
+      <div className="overflow-auto w-full max-w-[95vh]">
         <DisplayTable data={data} column={column} />
       </div>
 
@@ -117,6 +159,21 @@ const SubCategoryPage = () => {
       )}
 
       {ImageURL && <ViewImage url={ImageURL} close={() => setImageURL("")} />}
+
+      {openEdit && (
+        <EditSubCategory
+          data={editData}
+          close={() => setOpenEdit(false)}
+          fetchData={fetchSubCategory}
+        />
+      )}
+      {openDeleteConfirmBox && (
+        <ConfirmBox
+          cancel={() => setOpenDeleteConfirmBox(false)}
+          close={() => setOpenDeleteConfirmBox(false)}
+          confirm={handleDeleteSubCategory}
+        />
+      )}
     </section>
   );
 };

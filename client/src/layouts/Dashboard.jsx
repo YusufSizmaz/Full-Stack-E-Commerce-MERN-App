@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const user = useSelector((state) => state.user);
-  console.log("user dashboard", user);
 
   return (
     <section className="bg-white  ">
