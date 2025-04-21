@@ -28,6 +28,8 @@ const UploadProduct = () => {
   const [selectSubCategory, setSelectSubCategory] = useState("");
   const allSubCategory = useSelector((state) => state.product.allSubCategory);
 
+  console.log("allSubCategory:", allSubCategory);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -70,6 +72,16 @@ const UploadProduct = () => {
 
   const handleRemoveCategory = async (index) => {
     data.category.splice(index, 1);
+
+    setData((preve) => {
+      return {
+        ...preve,
+      };
+    });
+  };
+
+  const handleRemoveSubCategory = async (index) => {
+    data.subCategory.splice(index, 1);
 
     setData((preve) => {
       return {
@@ -224,9 +236,11 @@ const UploadProduct = () => {
                 value={selectSubCategory}
                 onChange={(e) => {
                   const value = e.target.value;
+                  console.log("Selected value:", value);
                   const subCategory = allSubCategory.find(
                     (el) => el._id === value
                   );
+                  console.log("Found subCategory:", subCategory);
 
                   setData((preve) => {
                     return {
@@ -240,22 +254,27 @@ const UploadProduct = () => {
                 <option value={""} disabled>
                   Select Sub Category
                 </option>
-                {allSubCategory.map((c, index) => {
-                  return <option value={c?._id}>{c.name}</option>;
-                })}
+                {allSubCategory && allSubCategory.length > 0 ? (
+                  allSubCategory.map((c, index) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No subcategories available</option>
+                )}
               </select>
-
-              <div className="flex flex-wrap gap-3 ">
+              <div className="flex flex-wrap gap-3">
                 {data.subCategory.map((c, index) => {
                   return (
                     <div
                       key={c._id + index + "productsection"}
-                      className="text-sm items-center flex gap-1 bg-blue-50 mt-2"
+                      className="text-sm flex items-center gap-1 bg-blue-50 mt-2"
                     >
                       <p>{c.name}</p>
                       <div
-                        className="hover:text-red-600 cursor-pointer"
-                        onClick={() => handleRemoveCategory(index)}
+                        className="hover:text-red-500 cursor-pointer"
+                        onClick={() => handleRemoveSubCategory(index)}
                       >
                         <IoClose size={20} />
                       </div>

@@ -13,7 +13,7 @@ const productSlice = createSlice({
     setAllCategory: (state, action) => {
       state.allCategory = [...action.payload];
     },
-    setAllSubCategory: (status, action) => {
+    setAllSubCategory: (state, action) => {
       state.allSubCategory = [...action.payload];
     },
   },
