@@ -123,7 +123,7 @@ const Profile = () => {
             placeholder="Enter Mobile"
             className="p-2 bg-slate-100 border rounded border-amber-300 focus-within:outline-amber-400"
             value={userData.mobile}
-            name="email"
+            name="mobile"
             onChange={handleOnChange}
             required
           />
