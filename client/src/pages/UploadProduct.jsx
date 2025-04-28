@@ -448,6 +448,7 @@ const UploadProduct = () => {
           </button>
         </form>
       </div>
+
       {ViewImageURL && (
         <ViewImage url={ViewImageURL} close={() => setViewImageURL("")} />
       )}

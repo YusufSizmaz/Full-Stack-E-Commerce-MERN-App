@@ -61,7 +61,7 @@ export const createProductController = async (request, response) => {
 
 export const getProductController = async (request, response) => {
   try {
-    const { page, limit, search } = request.body;
+    let { page, limit, search } = request.body;
 
     if (!page) {
       page: 2;
