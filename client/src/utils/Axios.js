@@ -21,48 +21,61 @@ Axios.interceptors.request.use(
   }
 );
 
-// extend the life span of access token with
-// the help refresh
-Axios.interceptors.request.use(
+// Handle response errors and refresh token
+Axios.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error) => {
-    let originRequest = error.config;
+    const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originRequest.retry) {
-      originRequest.retry = true;
+    // If the error status is 401 and there's no originalRequest._retry flag,
+    // it means the token has expired and we need to refresh it
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-      const refreshToken = localStorage.getItem("refreshToken");
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
 
-      if (refreshToken) {
-        const newAccessToken = await refreshAccessToken(refreshToken);
-
-        if (newAccessToken) {
-          originRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return Axios(originRequest);
+        if (!refreshToken) {
+          // If no refresh token, redirect to login
+          window.location.href = "/login";
+          return Promise.reject(error);
         }
+
+        // Call refresh token endpoint
+        const response = await axios.post(
+          `${baseURL}${SummaryApi.refresToken.url}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${refreshToken}`,
+            },
+            withCredentials: true,
+          }
+        );
+
+        if (response.data.success) {
+          const newAccessToken = response.data.data.accessToken;
+
+          // Store the new token
+          localStorage.setItem("accessToken", newAccessToken);
+
+          // Retry the original request with the new token
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return Axios(originalRequest);
+        }
+      } catch (refreshError) {
+        // If refresh token is invalid or expired, redirect to login
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
       }
     }
 
     return Promise.reject(error);
   }
 );
-
-const refreshAccessToken = async (refreshToken) => {
-  try {
-    const response = await Axios({
-      ...SummaryApi.refresToken,
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-      },
-    });
-    const accessToken = response.data.data.accessToken;
-    localStorage.setItem("accesstoken", accessToken);
-    return accessToken;
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 export default Axios;

@@ -8,7 +8,15 @@ const fetchUserDetails = async () => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    if (error.response?.status === 401) {
+      // Token expired, the interceptor will handle it
+      throw error;
+    }
+    console.error(
+      "Error fetching user details:",
+      error.response?.data || error.message
+    );
+    throw error;
   }
 };
 

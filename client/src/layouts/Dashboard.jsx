@@ -11,7 +11,7 @@ const Dashboard = () => {
       {/* mt-24: Navbar yüksekliğine göre margin (navbar sabitse gerekli) */}
       <div className="flex h-full ">
         {/* Sol Panel - %30 */}
-        <div className="w-full sticky  lg:w-[30%] top-24 max-h-[calc(100vh-96px)] border-r overflow-y-auto  border-gray-200 px-4 py-6 ">
+        <div className=" sticky  w-[20%] top-2 max-h-[calc(100vh-96px)] border-r overflow-y-auto  border-gray-200 px-4 py-6 ">
           <UserMenu />
         </div>
 

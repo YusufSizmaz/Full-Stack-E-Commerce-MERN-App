@@ -495,10 +495,27 @@ export async function refreshToken(request, response) {
 export async function UserDetails(request, response) {
   try {
     const userId = request.userId;
+    console.log("User ID:", userId); // Debug log
+
+    if (!userId) {
+      return response.status(400).json({
+        message: "User ID not found in request",
+        error: true,
+        success: false,
+      });
+    }
 
     const user = await UserModel.findById(userId).select(
       "-password -refresh_token"
     );
+
+    if (!user) {
+      return response.status(404).json({
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
 
     return response.json({
       message: "user details",
@@ -507,8 +524,9 @@ export async function UserDetails(request, response) {
       success: true,
     });
   } catch (error) {
+    console.error("UserDetails Error:", error); // Debug log
     return response.status(500).json({
-      message: "Something is wrong",
+      message: error.message || "Something is wrong",
       error: true,
       success: false,
     });
