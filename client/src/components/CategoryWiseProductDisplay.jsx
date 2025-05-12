@@ -4,6 +4,7 @@ import AxiosToastError from "../utils/AxiosToastError";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import CardLoading from "./CardLoading";
+import CardProduct from "./CardProduct";
 
 const CategoryWiseProductDisplay = ({ id, name }) => {
   const [data, setData] = useState([]);
@@ -34,6 +35,8 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
     fetchCategoryWiseProduct();
   }, []);
 
+  const loadingCardNumber = new Array(6).fill(null);
+
   return (
     <div>
       <div className="container mx-auto p-4 flex items-center justify-between gap-4 ">
@@ -42,8 +45,20 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
           See All
         </Link>
       </div>
-      <div>
-        <CardLoading />
+      <div className="flex items-center gap-4 md:gap-6 lg:gap-8 container mx-auto  p-4">
+        {loading &&
+          loadingCardNumber.map((_, index) => {
+            return <CardLoading />;
+          })}
+
+        {data.map((p, index) => {
+          return (
+            <CardProduct
+              data={p}
+              key={p._id + "CategorywiseProductDisplay" + index}
+            />
+          );
+        })}
       </div>
     </div>
   );
