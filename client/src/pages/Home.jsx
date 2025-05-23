@@ -15,16 +15,20 @@ const Home = () => {
   const handleRedirectProductListPage = (id, cat) => {
     const subcategory = subCategoryData.find((sub) => {
       const filterData = sub.category.some((c) => {
-        return c._id == id;
+        return c._id === id;
       });
-      return filterData ? true : null;
+      return filterData ? sub : null;
     });
+
+    if (!subcategory) {
+      console.error("Subcategory not found for category:", cat);
+      return;
+    }
+
     const url = `/${valideURLConvert(cat)}-${id}/${valideURLConvert(
       subcategory.name
     )}-${subcategory._id}`;
-
     navigate(url);
-    console.log(url);
   };
 
   return (
@@ -65,7 +69,7 @@ const Home = () => {
               return (
                 <div
                   key={cat._id + "displayCategory"}
-                  className="w-full h-full"
+                  className="w-full h-full cursor-pointer"
                   onClick={() =>
                     handleRedirectProductListPage(cat._id, cat.name)
                   }
@@ -74,6 +78,7 @@ const Home = () => {
                     <img
                       src={cat.image}
                       className="w-full h-full object-scale-down"
+                      alt={cat.name}
                     />
                   </div>
                 </div>

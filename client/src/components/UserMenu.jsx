@@ -6,7 +6,7 @@ import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import { logout } from "../store/userSlice";
 import toast from "react-hot-toast";
-import { AxiosToastError, AxiosToastSuccess } from "../utils/AxiosToastError";
+import { AxiosToastError } from "../utils/AxiosToastError";
 import { HiOutlineExternalLink } from "react-icons/hi";
 import isAdmin from "../utils/isAdmin";
 
@@ -17,19 +17,28 @@ const UserMenu = ({ close }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await Axios({
-        ...SummaryApi.logout,
-      });
-      console.log("logout", response);
-      if (response.data.success) {
-        if (close) {
-          close();
-        }
-        dispatch(logout());
-        localStorage.clear();
-        toast.success(response.data.message);
-        navigate("/");
+      // Önce localStorage'ı temizle
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      // Redux state'i temizle
+      dispatch(logout());
+
+      // Menüyü kapat
+      if (close) {
+        close();
       }
+
+      // Logout API'sini çağır
+      await Axios.get(SummaryApi.logout.url);
+
+      // Başarılı mesajını göster
+      toast.success("Başarıyla çıkış yapıldı");
+
+      // Sayfayı yenile ve ana sayfaya yönlendir
+      setTimeout(() => {
+        window.location.replace("/");
+      }, 100);
     } catch (error) {
       console.log(error);
       AxiosToastError(error);
@@ -41,9 +50,10 @@ const UserMenu = ({ close }) => {
       close();
     }
   };
+
   return (
     <div>
-      <div className="font-semibold">My Account</div>
+      <div className="font-semibold">Hesabım</div>
       <div className="text-sm flex items-center gap-2">
         <span className="max-w-52 text-ellipsis line-clamp-1">
           {user.name || user.mobile}{" "}
@@ -69,7 +79,7 @@ const UserMenu = ({ close }) => {
             to={"/dashboard/category"}
             className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
           >
-            Category
+            Kategoriler
           </Link>
         )}
 
@@ -79,7 +89,7 @@ const UserMenu = ({ close }) => {
             to={"/dashboard/subcategory"}
             className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
           >
-            Sub Category
+            Alt Kategoriler
           </Link>
         )}
 
@@ -89,7 +99,7 @@ const UserMenu = ({ close }) => {
             to={"/dashboard/upload-product"}
             className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
           >
-            Upload Product
+            Ürün Yükle
           </Link>
         )}
 
@@ -99,7 +109,7 @@ const UserMenu = ({ close }) => {
             to={"/dashboard/product"}
             className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
           >
-            Product
+            Ürünler
           </Link>
         )}
 
@@ -108,7 +118,7 @@ const UserMenu = ({ close }) => {
           to={"/dashboard/myorders"}
           className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
         >
-          My Orders
+          Siparişlerim
         </Link>
 
         <Link
@@ -116,13 +126,13 @@ const UserMenu = ({ close }) => {
           to={"/dashboard/address"}
           className="px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
         >
-          Save Address
+          Adreslerim
         </Link>
         <button
           onClick={handleLogout}
           className="text-left cursor-pointer px-2 hover:bg-orange-400 py-1 rounded hover:text-white"
         >
-          Log Out
+          Çıkış Yap
         </button>
       </div>
     </div>

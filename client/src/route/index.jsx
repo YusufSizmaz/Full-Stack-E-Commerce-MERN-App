@@ -18,11 +18,14 @@ import UploadProduct from "../pages/UploadProduct";
 import ProductAdmin from "../pages/ProductAdmin";
 import AdminPermision from "../layouts/AdminPermision";
 import ProductListPage from "../pages/ProductListPage";
+import ProductDisplayPage from "../pages/ProductDisplayPage";
+import ErrorPage from "../components/ErrorPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "",
@@ -84,7 +87,7 @@ const router = createBrowserRouter([
             path: "subcategory",
             element: (
               <AdminPermision>
-                <SubCategoryPage />,
+                <SubCategoryPage />
               </AdminPermision>
             ),
           },
@@ -114,6 +117,10 @@ const router = createBrowserRouter([
             element: <ProductListPage />,
           },
         ],
+      },
+      {
+        path: "product/:product",
+        element: <ProductDisplayPage />,
       },
     ],
   },

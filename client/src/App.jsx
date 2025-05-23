@@ -11,16 +11,23 @@ import {
   setAllSubCategory,
   setLoadingCategory,
 } from "./store/productSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Axios from "./utils/Axios";
 import SummaryApi from "./common/SummaryApi";
 
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const fetchUser = async () => {
-    const userData = await fetchUserDetails();
-    dispatch(setUserDetails(userData.data));
+    try {
+      const userData = await fetchUserDetails();
+      dispatch(setUserDetails(userData.data));
+      return true;
+    } catch (error) {
+      console.log("User fetch error:", error);
+      return false;
+    }
   };
 
   const fetchCategory = async () => {
@@ -36,6 +43,7 @@ function App() {
         dispatch(setAllCategory(responseData.data));
       }
     } catch (error) {
+      console.log("Category fetch error:", error);
     } finally {
       dispatch(setLoadingCategory(false));
     }
@@ -53,14 +61,22 @@ function App() {
         dispatch(setAllSubCategory(responseData.data));
       }
     } catch (error) {
-    } finally {
+      console.log("SubCategory fetch error:", error);
     }
   };
 
   useEffect(() => {
-    fetchUser();
-    fetchCategory();
-    fetchSubCategory();
+    const initializeApp = async () => {
+      const isUserLoggedIn = await fetchUser();
+
+      // Sadece kullanıcı giriş yapmışsa category ve subcategory verilerini çek
+      if (isUserLoggedIn) {
+        await fetchCategory();
+        await fetchSubCategory();
+      }
+    };
+
+    initializeApp();
   }, []);
 
   return (
