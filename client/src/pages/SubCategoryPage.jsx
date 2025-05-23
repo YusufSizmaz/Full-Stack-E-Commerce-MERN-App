@@ -56,7 +56,7 @@ const SubCategoryPage = () => {
       header: "Image",
       cell: ({ row }) => {
         return (
-          <div className="flex justify-center items-center ">
+          <div className="flex justify-center  items-center ">
             <img
               src={row.original.image}
               alt={row.original.name}
@@ -76,10 +76,7 @@ const SubCategoryPage = () => {
           <>
             {row.original.category.map((c, index) => {
               return (
-                <p
-                  key={c._id + "table"}
-                  className="shadow-md px-1 inline-block"
-                >
+                <p key={c._id + "table"} className=" px-1 inline-block">
                   {c.name}
                 </p>
               );
@@ -140,7 +137,7 @@ const SubCategoryPage = () => {
 
   return (
     <section className="p-4">
-      <div className="mb-4 bg-white shadow-md flex items-center justify-between p-2">
+      <div className="mb-4 bg-white shadow-md flex items-center  justify-between p-2">
         <h2 className="font-semibold">Sub Category</h2>
         <button
           onClick={() => setOpenAddSubCategory(true)}
