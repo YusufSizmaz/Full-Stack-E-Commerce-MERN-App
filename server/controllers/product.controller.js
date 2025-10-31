@@ -61,10 +61,15 @@ export const createProductController = async (request, response) => {
 
 export const getProductController = async (request, response) => {
   try {
-    let { page, limit, search } = request.query;
+    let { page, limit, search } = request.body;
 
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 10;
+    if (!page) {
+      page: 2;
+    }
+
+    if (!limit) {
+      limit: 10;
+    }
 
     const query = search
       ? {
@@ -77,12 +82,7 @@ export const getProductController = async (request, response) => {
     const skip = (page - 1) * limit;
 
     const [data, totalCount] = await Promise.all([
-      ProductModel.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('category', 'name')
-        .populate('subCategory', 'name'),
+      ProductModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
       ProductModel.countDocuments(query),
     ]);
 
@@ -96,7 +96,7 @@ export const getProductController = async (request, response) => {
     });
   } catch (error) {
     return response.status(500).json({
-      message: error.message || error,
+      message: message.error || error,
       error: true,
       success: false,
     });
@@ -105,7 +105,7 @@ export const getProductController = async (request, response) => {
 
 export const getProductByCategory = async (request, response) => {
   try {
-    const { id } = request.query;
+    const { id } = request.body;
 
     if (!id) {
       return response.status(400).json({
@@ -114,17 +114,9 @@ export const getProductByCategory = async (request, response) => {
         success: false,
       });
     }
-
-    // Handle both single ID and array of IDs
-    const categoryIds = Array.isArray(id) ? id : [id];
-
     const product = await ProductModel.find({
-      category: { $in: categoryIds },
-    })
-      .limit(15)
-      .populate('category', 'name')
-      .populate('subCategory', 'name')
-      .sort({ createdAt: -1 });
+      category: { $in: id },
+    }).limit(15);
 
     return response.json({
       message: "category product list",
@@ -134,7 +126,7 @@ export const getProductByCategory = async (request, response) => {
     });
   } catch (error) {
     return response.status(500).json({
-      message: error.message || error,
+      message: message.error || error,
       error: true,
       success: false,
     });

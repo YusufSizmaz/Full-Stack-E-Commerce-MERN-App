@@ -9,7 +9,7 @@ import {
 const productRouter = Router();
 
 productRouter.post("/create", auth, createProductController);
-productRouter.get("/get", getProductController);
-productRouter.get("/get-product-by-category", getProductByCategory);
+productRouter.post("/get", getProductController);
+productRouter.post("/get-product-by-category", getProductByCategory);
 
 export default productRouter;
