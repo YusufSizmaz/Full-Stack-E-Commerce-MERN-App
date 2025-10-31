@@ -31,71 +31,83 @@ const Home = () => {
     navigate(url);
   };
 
+  const handleCategoryClick = (id, catName) => {
+    handleRedirectProductListPage(id, catName);
+  };
+
   return (
     <section className="bg-white">
-      <div className=" container mx-auto">
-        <div
-          className={`w-full h-full min-h-48 bg-gray-200 rounded ${
-            !banner && "animate-pulse my-2"
-          } `}
-        >
+      {/* Banner Section */}
+      <div className="container mx-auto px-4 py-4">
+        <div className="w-full rounded-lg overflow-hidden shadow-md">
           <img
             src={banner}
-            className="w-full h-full hidden  lg:block"
+            className="w-full h-auto hidden lg:block object-cover"
             alt="banner"
           />
           <img
             src={bannerMobile}
-            className="w-full h-full  lg:hidden"
+            className="w-full h-auto lg:hidden object-cover"
             alt="banner"
           />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 my-2 grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10  gap-2">
-        {loadingCategory
-          ? new Array(12).fill(null).map((c, index) => {
-              return (
-                <div
-                  key={index + "loadingcategory"}
-                  className={`"bg-white  rounded p-4 min-h-36 grid gap-2 shadow" animate-pulse `}
-                >
-                  <div className="bg-gray-100 min-h-24 rounded"></div>
-                  <div className="bg-gray-100 h-8 rounded"></div>
-                </div>
-              );
-            })
-          : categoryData.map((cat, index) => {
-              return (
-                <div
-                  key={cat._id + "displayCategory"}
-                  className="w-full h-full cursor-pointer"
-                  onClick={() =>
-                    handleRedirectProductListPage(cat._id, cat.name)
-                  }
-                >
-                  <div>
-                    <img
-                      src={cat.image}
-                      className="w-full h-full object-scale-down"
-                      alt={cat.name}
-                    />
+      {/* Category Grid Section */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-4">
+          {loadingCategory
+            ? new Array(12).fill(null).map((c, index) => {
+                return (
+                  <div
+                    key={index + "loadingcategory"}
+                    className="bg-white rounded-lg shadow-md p-3 min-h-32 grid gap-2 animate-pulse"
+                  >
+                    <div className="bg-gray-200 min-h-20 rounded"></div>
+                    <div className="bg-gray-200 h-4 rounded"></div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            : categoryData.map((cat, index) => {
+                return (
+                  <div
+                    key={cat._id + "displayCategory"}
+                    className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer overflow-hidden group"
+                    onClick={() => handleCategoryClick(cat._id, cat.name)}
+                  >
+                    <div className="p-3 flex flex-col items-center justify-center min-h-32">
+                      <div className="w-full h-20 flex items-center justify-center mb-2">
+                        <img
+                          src={cat.image}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                          alt={cat.name}
+                        />
+                      </div>
+                      <p className="text-xs text-center font-medium text-gray-700 line-clamp-2 mt-auto">
+                        {cat.name}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+        </div>
       </div>
 
-      {/*display category product*/}
-      {categoryData.map((c, index) => {
-        return (
-          <CategoryWiseProductDisplay
-            key={c?._id + "CategorywiseProduct"}
-            id={c?._id}
-            name={c?.name}
-          />
-        );
-      })}
+      {/* Category Wise Product Display */}
+      {categoryData.length > 0 && (
+        <div className="space-y-8 pb-8">
+          {categoryData.map((c, index) => {
+            return (
+              <CategoryWiseProductDisplay
+                key={c?._id + "CategorywiseProduct"}
+                id={c?._id}
+                name={c?.name}
+                categoryId={c?._id}
+              />
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 };

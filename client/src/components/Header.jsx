@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../assets/logo.png";
 import Search from "./Search";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -8,6 +8,8 @@ import useMobile from "../hooks/useMobile";
 import { useSelector } from "react-redux";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import UserMenu from "./UserMenu";
+import Axios from "../utils/Axios";
+import SummaryApi from "../common/SummaryApi";
 
 const Header = () => {
   const isMobile = useMobile();
@@ -16,6 +18,34 @@ const Header = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state?.user);
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  // Fetch cart count
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (user._id) {
+        try {
+          const response = await Axios({
+            ...SummaryApi.getCart,
+          });
+          if (response.data.success) {
+            const items = response.data.data || [];
+            const totalQuantity = items.reduce((sum, item) => {
+              return sum + (item.quantity || 0);
+            }, 0);
+            setCartCount(totalQuantity);
+          }
+        } catch (error) {
+          // Silently fail if cart fetch fails
+          console.error("Cart fetch error:", error);
+        }
+      } else {
+        setCartCount(0);
+      }
+    };
+
+    fetchCartCount();
+  }, [user._id, user.shopping_cart]);
 
   const redirectToLoginPage = () => {
     navigate("/login");
@@ -106,10 +136,23 @@ const Header = () => {
                 </button>
               )}
 
-              <button className="flex items-center gap-2 bg-green-700 hover:bg-green-600 px-3 py-3 rounded text-white">
-                {/* Add to cart icon */}
-                <div className="animate-bounce">
+              <button
+                onClick={() => {
+                  if (!user._id) {
+                    navigate("/login");
+                  } else {
+                    navigate("/cart");
+                  }
+                }}
+                className="relative flex items-center gap-2 bg-green-700 hover:bg-green-600 px-3 py-3 rounded text-white transition-colors"
+              >
+                <div className="relative">
                   <BsCart4 size={26} />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
                 </div>
                 <div className="font-semibold">
                   <p>My Cart</p>

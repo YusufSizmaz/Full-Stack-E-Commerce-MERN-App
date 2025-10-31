@@ -89,6 +89,54 @@ const SummaryApi = {
     url: "/api/product/get-product-by-category",
     method: "post",
   },
+  getOrders: {
+    url: "/api/order/get",
+    method: "get",
+  },
+  getAddresses: {
+    url: "/api/address/get",
+    method: "get",
+  },
+  addAddress: {
+    url: "/api/address/add",
+    method: "post",
+  },
+  updateAddress: {
+    url: "/api/address/update",
+    method: "put",
+  },
+  deleteAddress: {
+    url: "/api/address/delete",
+    method: "delete",
+  },
+  getCart: {
+    url: "/api/cart/get",
+    method: "get",
+  },
+  addToCart: {
+    url: "/api/cart/add",
+    method: "post",
+  },
+  updateCartItem: {
+    url: "/api/cart/update",
+    method: "put",
+  },
+  removeFromCart: {
+    url: "/api/cart/remove",
+    method: "delete",
+  },
+  clearCart: {
+    url: "/api/cart/clear",
+    method: "delete",
+  },
+  createPaymentIntent: {
+    url: "/api/payment/create-intent",
+    method: "post",
+  },
+  confirmPayment: {
+    url: "/api/payment/confirm",
+    method: "post",
+  },
 };
 
 export default SummaryApi;
