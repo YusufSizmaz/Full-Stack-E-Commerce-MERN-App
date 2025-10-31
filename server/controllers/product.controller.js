@@ -126,15 +126,9 @@ export const getProductByCategory = async (request, response) => {
     });
   } catch (error) {
     return response.status(500).json({
-<<<<<<< HEAD
-<<<<<<< HEAD
       message: message.error || error,
-=======
       message: error.message || error,
->>>>>>> parent of dd884ad (feat: Complete admin panel backend implementation)
-=======
       message: message.error || error,
->>>>>>> parent of b92fd77 (feat: Comprehensive backend improvements for production readiness)
       error: true,
       success: false,
     });

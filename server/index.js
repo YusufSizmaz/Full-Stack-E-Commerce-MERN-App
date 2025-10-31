@@ -11,34 +11,6 @@ import categoryRouter from "./route/category.route.js";
 import uploadRouter from "./route/upload.router.js";
 import subCategoryRouter from "./route/subCategory.route.js";
 import productRouter from "./route/product.route.js";
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import {
-  errorHandler,
-  notFoundHandler,
-} from "./middleware/errorHandler.js";
-import {
-  apiRateLimiter,
-  authRateLimiter,
-  uploadRateLimiter,
-  sanitizeData,
-  securityHeaders,
-  compressResponses,
-  sanitizeInput,
-} from "./middleware/security.js";
-import { handleMulterError } from "./middleware/multer.js";
-
-// Validate environment variables before starting the server
-try {
-  validateEnv();
-} catch (error) {
-  logger.error("Environment validation failed:", error);
-  process.exit(1);
-}
->>>>>>> parent of dd884ad (feat: Complete admin panel backend implementation)
-=======
->>>>>>> parent of b92fd77 (feat: Comprehensive backend improvements for production readiness)
 
 const app = express();
 app.use(
@@ -56,7 +28,7 @@ app.use(
   })
 );
 
-const PORT = 8080 || process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
 app.get("/", (request, response) => {
   /// Server to client
