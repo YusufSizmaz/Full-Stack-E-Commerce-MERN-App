@@ -12,6 +12,7 @@ import uploadRouter from "./route/upload.router.js";
 import subCategoryRouter from "./route/subCategory.route.js";
 import productRouter from "./route/product.route.js";
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import {
   errorHandler,
@@ -36,6 +37,8 @@ try {
   process.exit(1);
 }
 >>>>>>> parent of dd884ad (feat: Complete admin panel backend implementation)
+=======
+>>>>>>> parent of b92fd77 (feat: Comprehensive backend improvements for production readiness)
 
 const app = express();
 app.use(
