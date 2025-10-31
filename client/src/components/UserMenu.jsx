@@ -29,7 +29,7 @@ const UserMenu = ({ close }) => {
         close();
       }
 
-      // Logout API'sini çağır
+      // Logout API'sini çağır ve response data'yı al
       await Axios.get(SummaryApi.logout.url);
 
       // Başarılı mesajını göster
