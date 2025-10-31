@@ -12,6 +12,8 @@ import categoryRouter from "./route/category.route.js";
 import uploadRouter from "./route/upload.router.js";
 import subCategoryRouter from "./route/subCategory.route.js";
 import productRouter from "./route/product.route.js";
+import orderRouter from "./route/order.route.js";
+import dashboardRouter from "./route/dashboard.route.js";
 import {
   errorHandler,
   notFoundHandler,
@@ -108,6 +110,8 @@ app.use("/api/category", categoryRouter);
 app.use("/api/file", uploadRouter);
 app.use("/api/subcategory", subCategoryRouter);
 app.use("/api/product", productRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 // Multer error handler (must come before general error handler)
 app.use(handleMulterError);

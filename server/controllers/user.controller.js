@@ -532,3 +532,289 @@ export async function UserDetails(request, response) {
     });
   }
 }
+
+// ============ ADMIN ONLY ENDPOINTS ============
+
+// Get all users (Admin)
+export async function getAllUsersController(request, response) {
+  try {
+    const { page = 1, limit = 10, search, role, status } = request.query;
+
+    const query = {};
+
+    // Search by name, email, or username
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { username: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Filter by role
+    if (role) {
+      query.role = role;
+    }
+
+    // Filter by status
+    if (status) {
+      query.status = status;
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [users, totalCount] = await Promise.all([
+      UserModel.find(query)
+        .select("-password -refresh_token -forgot_password_otp")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      UserModel.countDocuments(query),
+    ]);
+
+    return response.json({
+      message: "All users retrieved successfully",
+      data: users,
+      totalCount,
+      totalPages: Math.ceil(totalCount / Number(limit)),
+      currentPage: Number(page),
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Something went wrong",
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Update user status (Admin)
+export async function updateUserStatusController(request, response) {
+  try {
+    const { userId, status } = request.body;
+
+    if (!userId || !status) {
+      return response.status(400).json({
+        message: "User ID and status are required",
+        error: true,
+        success: false,
+      });
+    }
+
+    const validStatuses = ["Active", "Inactive", "Suspended"];
+    if (!validStatuses.includes(status)) {
+      return response.status(400).json({
+        message: `Status must be one of: ${validStatuses.join(", ")}`,
+        error: true,
+        success: false,
+      });
+    }
+
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { status },
+      { new: true }
+    ).select("-password -refresh_token");
+
+    if (!user) {
+      return response.status(404).json({
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.json({
+      message: `User status updated to ${status}`,
+      data: user,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Something went wrong",
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Update user role (Admin)
+export async function updateUserRoleController(request, response) {
+  try {
+    const { userId, role } = request.body;
+    const adminId = request.userId;
+
+    if (!userId || !role) {
+      return response.status(400).json({
+        message: "User ID and role are required",
+        error: true,
+        success: false,
+      });
+    }
+
+    // Prevent admin from changing their own role
+    if (userId === adminId) {
+      return response.status(400).json({
+        message: "You cannot change your own role",
+        error: true,
+        success: false,
+      });
+    }
+
+    const validRoles = ["ADMIN", "USER"];
+    if (!validRoles.includes(role)) {
+      return response.status(400).json({
+        message: `Role must be one of: ${validRoles.join(", ")}`,
+        error: true,
+        success: false,
+      });
+    }
+
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true }
+    ).select("-password -refresh_token");
+
+    if (!user) {
+      return response.status(404).json({
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.json({
+      message: `User role updated to ${role}`,
+      data: user,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Something went wrong",
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Delete user (Admin)
+export async function deleteUserController(request, response) {
+  try {
+    const { userId } = request.body;
+    const adminId = request.userId;
+
+    if (!userId) {
+      return response.status(400).json({
+        message: "User ID is required",
+        error: true,
+        success: false,
+      });
+    }
+
+    // Prevent admin from deleting themselves
+    if (userId === adminId) {
+      return response.status(400).json({
+        message: "You cannot delete your own account",
+        error: true,
+        success: false,
+      });
+    }
+
+    const user = await UserModel.findByIdAndDelete(userId);
+
+    if (!user) {
+      return response.status(404).json({
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.json({
+      message: "User deleted successfully",
+      data: user,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Something went wrong",
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Get user statistics (Admin)
+export async function getUserStatsController(request, response) {
+  try {
+    const [
+      totalUsers,
+      activeUsers,
+      inactiveUsers,
+      suspendedUsers,
+      totalAdmins,
+      verifiedUsers,
+      unverifiedUsers,
+    ] = await Promise.all([
+      UserModel.countDocuments(),
+      UserModel.countDocuments({ status: "Active" }),
+      UserModel.countDocuments({ status: "Inactive" }),
+      UserModel.countDocuments({ status: "Suspended" }),
+      UserModel.countDocuments({ role: "ADMIN" }),
+      UserModel.countDocuments({ verify_email: true }),
+      UserModel.countDocuments({ verify_email: false }),
+    ]);
+
+    return response.json({
+      message: "User statistics retrieved successfully",
+      data: {
+        totalUsers,
+        activeUsers,
+        inactiveUsers,
+        suspendedUsers,
+        totalAdmins,
+        verifiedUsers,
+        unverifiedUsers,
+      },
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Something went wrong",
+      error: true,
+      success: false,
+    });
+  }
+}
+
+// Get recent users (Admin)
+export async function getRecentUsersController(request, response) {
+  try {
+    const { limit = 10 } = request.query;
+
+    const users = await UserModel.find()
+      .select("-password -refresh_token -forgot_password_otp")
+      .sort({ createdAt: -1 })
+      .limit(Number(limit));
+
+    return response.json({
+      message: "Recent users retrieved successfully",
+      data: users,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Something went wrong",
+      error: true,
+      success: false,
+    });
+  }
+}
