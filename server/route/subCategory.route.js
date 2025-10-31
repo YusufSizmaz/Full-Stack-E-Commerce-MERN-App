@@ -10,7 +10,11 @@ import {
 const subCategoryRouter = Router();
 
 subCategoryRouter.post("/create", auth, AddSubCategoryController);
+<<<<<<< HEAD
 subCategoryRouter.post("/get", getSubCategoryController);
+=======
+subCategoryRouter.get("/get", getSubCategoryController);
+>>>>>>> parent of dd884ad (feat: Complete admin panel backend implementation)
 subCategoryRouter.put("/update", auth, updateSubCategoryController);
 subCategoryRouter.delete("/delete", auth, deleteSubCategoryController);
 

@@ -126,7 +126,11 @@ export const getProductByCategory = async (request, response) => {
     });
   } catch (error) {
     return response.status(500).json({
+<<<<<<< HEAD
       message: message.error || error,
+=======
+      message: error.message || error,
+>>>>>>> parent of dd884ad (feat: Complete admin panel backend implementation)
       error: true,
       success: false,
     });
